@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>GSTC simple example</title>
+    <link rel="stylesheet" href="../../dist/style.css" />
+    <!-- replace this path  -->
+    <link rel="stylesheet" href="../reset.css" />
+  </head>
+  <body>
+    <div id="gstc"></div>
+    <script src="../../dist/plugins/time-bookmarks.umd.min.js"></script>
+    <script src="../../dist/gstc.wasm.umd.min.js"></script>
+    <!-- replace this path  -->
+    <script>
+      
+      const startDate = GSTC.api.date('2022-09-01').startOf('month');
+      const endDate = startDate.clone().endOf('month');
+      const startTime = startDate.valueOf();
+
+      const rowsFromDB = [
+        {
+          id: '0',
+          label: 'Nguyễn Văn tèo',
+          expanded: true,
+        },
+        {
+          id: '1',
+          label: 'TrueCloud Server (Tp.HCM)',
+          parentId: '0',
+          expanded: true,
+        },
+        {
+          id: '1.1',
+          label: 'VM-1',
+          parentId: '1',
+          expanded: true,
+        },
+        {
+          id: '1.2',
+          label: 'VM-2',
+          parentId: '1',
+          expanded: true,
+        },
+      ];
+
+      const itemsFromDB = [
+        {
+          id: 't1',
+          label: 'Item 1',
+          rowId: '1.1',
+          time: {
+            start: GSTC.api.date('2022-08-01').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-10').endOf('day').valueOf(),
+          },
+        },
+        {
+          id: 't2',
+          label: 'Item 2',
+          rowId: '1.2',
+          time: {
+            start: GSTC.api.date('2022-08-15').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-20').endOf('day').valueOf(),
+          },
+        },
+        // {
+        //   id: '2',
+        //   label: 'Item 2',
+        //   rowId: '2',
+        //   time: {
+        //     start: GSTC.api.date('2022-09-10').startOf('day').valueOf(),
+        //     end: GSTC.api.date('2022-09-25').endOf('day').valueOf(),
+        //   },
+        // },
+        // {
+        //   id: '3',
+        //   label: 'Item 3',
+        //   rowId: '3',
+        //   time: {
+        //     start: GSTC.api.date('2022-09-01').startOf('day').valueOf(),
+        //     end: GSTC.api.date('2022-10-10').endOf('day').valueOf(),
+        //   },
+        // },
+      ];
+
+      const columnsFromDB = [
+        {
+          id: 'id',
+          label: 'ID',
+          data: ({ row }) => GSTC.api.sourceID(row.id), // show original id (not internal GSTCID)
+          sortable: ({ row }) => Number(GSTC.api.sourceID(row.id)), // sort by id converted to number
+          width: 80,
+          header: {
+            content: 'ID',
+          },
+        },
+        {
+          id: 'label',
+          data: 'label',
+          sortable: 'label',
+          expander: true,
+          isHTML: false,
+          width: 230,
+          header: {
+            content: 'Label',
+          },
+        },
+      ];
+      
+      const bookmarks = {
+        'bookmarks': {
+          time: GSTC.api.date(startTime).add(4, 'day').startOf('day').valueOf(),
+          color: '#3498DB',
+          label: 'bookmarks',
+        },
+      };
+
+      // Configuration object
+      const config = {
+        // for free key for your domain please visit https://gstc.neuronet.io/free-key
+        // if you need commercial license please visit https://gantt-schedule-timeline-calendar.neuronet.io/pricing
+
+        licenseKey:
+          '====BEGIN LICENSE KEY====\nWzVvPXMTi17W2tBoYgAjCRurYwmoilqPzew4PDApYkcrtu42uptbQiJmuZgy6iHyj9ZapfNupQZx0PO2tAMKmShNts7ZWT+N4N+lBkYCOsgc9nZG5ERYe25ixnNWzPnWA2YLj5GnZuKGJjK4EoRWsv3FJUoiBmUhKelLldb1dqCSiSjN4s5UwOtx55RLDEh0rj4GswVk4QaL74lmilmismeV+AxhQVdX8PVxz9bu0VW+wio/lo5QmfawWCeNLhuu0p0lys6pOvJhN/267+MsWhd3RYBvWIp6Mogug5P7nLQdeSdCgxVMVn1HOGZZ5ATTs9WDuWvvM1667MkEvtm2Ow==||U2FsdGVkX1+oPC1pq0yGIQoqTUJ8//k3BU81G6FLMlVijZH1e68HsOW0I2GI4aPzgeDcnoZvNO0MhGGTD+Nu8C1KviY3/a0MQhT+jGNofmA=\nUSUtJc13WJ1GjpEDFNHYeSsh1P7zRE5h+vdMN7KXcKDXAKi4gr3ebWUEHP3QjbcTeC3+mnn786sNVsERPLE67iqmgLdeXPjGIoScidvINw2x975diSP2r3kZkceqcfs48q3I6zXPaK1BJK/Yyin/7zboatOn+Abs+yAFZvDoLgga1nHRrtNgtaK+OXRJnCs519NsZuzqFSI2WuCYzaVkrO1hJqzgDsrxxue/NKmLtncLcWnFwNVZ2SDWdxgk4xGOi0GJmXUv3kn1fRau35FXF6zf0kPbilcWkGgweVpdDnBor1fjwvNLQDJpBT/Rav42SDKO7BRfWgjEKNY+lihQsA==\n====END LICENSE KEY====',
+        plugins: [
+          // TimelinePointer.Plugin(), // timeline pointer must go first before selection, resizing and movement
+          // Selection.Plugin(),
+          // ItemResizing.Plugin(), // resizing must fo before movement
+          // ItemMovement.Plugin(),
+          TimeBookmarks.Plugin({
+            bookmarks,
+          }),
+        ],
+        list: {
+          columns: {
+            data: GSTC.api.fromArray(columnsFromDB),
+          },
+          rows: GSTC.api.fromArray(rowsFromDB),
+        },
+        chart: {
+          items: GSTC.api.fromArray(itemsFromDB),
+        },
+      };
+
+      // Generate GSTC state from configuration object
+      const state = GSTC.api.stateFromConfig(config);
+      globalThis.state = state;
+
+      // Mount the component
+      const app = GSTC({
+        element: document.getElementById('gstc'),
+        state,
+      });
+      
+      globalThis.gstc = app;
+    </script>
+  </body>
+</html>
