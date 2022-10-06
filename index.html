@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>GSTC simple example</title>
+    <link rel="stylesheet" href="../../dist/style.css" />
+    <!-- replace this path  -->
+    <link rel="stylesheet" href="../reset.css" />
+  </head>
+  <body>
+    <div>
+      <left style="padding-left: 5px; color: red; font-size: 30px;">
+        left-row
+      </left>
+      <right style="margin-left: 300px;color: red; font-size: 30px;">
+        right-item
+      </right>
+    </div>
+    <div id="gstc" style="margin-top: 30px"></div>
+    <script src="../../dist/plugins/time-bookmarks.umd.min.js"></script>
+    <script src="../../dist/plugins/dependency-lines.umd.min.js"></script>
+    <script src="../../dist/gstc.wasm.umd.min.js"></script>
+    <!-- replace this path  -->
+    <style>
+
+    </style>
+    <script>
+      
+      const startDate = GSTC.api.date('2022-08-01').startOf('month');
+      const endDate = startDate.clone().endOf('month');
+      const startTime = startDate.valueOf();
+
+      const rowsFromDB = [
+        {
+          id: '0',
+          label: 'Nguyễn Văn tèo',
+          expanded: true,
+        },
+        {
+          id: '1',
+          label: 'TrueCloud Server (Tp.HCM)',
+          parentId: '0',
+          expanded: true,
+        },
+        {
+          id: '1.1',
+          label: 'VM-1',
+          parentId: '1',
+          expanded: true,
+        },
+        {
+          id: '1.1.1',
+          label: 'CPU (Core) Intel Gold',
+          parentId: '1.1',
+          expanded: true,
+        },
+        {
+          id: '1.1.2',
+          label: 'CPU (Core) Intel V4',
+          parentId: '1.1',
+          expanded: true,
+        },
+        {
+          id: '1.1.3',
+          label: 'Public IP (IP)',
+          parentId: '1.1',
+          expanded: true,
+        },
+        {
+          id: '1.1.4',
+          label: 'RAM (GB) DDR4 2133 MHz',
+          parentId: '1.1',
+          expanded: true,
+        },
+        {
+          id: '1.2',
+          label: 'VM-2',
+          parentId: '1',
+          expanded: true,
+        },
+        {
+          id: '1.2.1',
+          label: 'CPU (Core) Intel V4',
+          parentId: '1.2',
+          expanded: true,
+        },
+        {
+          id: '1.2.2',
+          label: 'RAM (GB) DDR4 2133 MHz',
+          parentId: '1.2',
+          expanded: true,
+        },
+        {
+          id: '1.3',
+          label: 'Storage',
+          parentId: '1',
+          expanded: true,
+        },
+        {
+          id: '1.3.1',
+          label: 'Storage (GB) Tier1 Enterprise SSD',
+          parentId: '1.3',
+          expanded: true,
+        }, 
+      ];
+
+      const itemsFromDB = [
+        {
+          id: 't1-1',
+          label: '',
+          rowId: '1.1',
+          time: {
+            start: GSTC.api.date('2022-08-01').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-07').endOf('day').valueOf(),
+          },
+          style: { background: '#F1892D' },
+        },
+        {
+          id: 't1-1-1',
+          label: 'cpu',
+          rowId: '1.1.1',
+          time: {
+            start: GSTC.api.date('2022-08-01').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-04').endOf('day').valueOf(),
+          },
+          style: { background: '#3498db' },
+        },
+        {
+          id: 't1-1-2',
+          label: 'cpu',
+          rowId: '1.1.2',
+          time: {
+            start: GSTC.api.date('2022-08-04').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-07').endOf('day').valueOf(),
+          },
+          style: { background: '#3498db' },
+        },
+        {
+          id: 't1-1-3',
+          label: 'ip',
+          rowId: '1.1.3',
+          time: {
+            start: GSTC.api.date('2022-08-01').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-07').endOf('day').valueOf(),
+          },
+          style: { background: '#3498db' },
+        },
+        {
+          id: 't1-1-4',
+          label: 'ram',
+          rowId: '1.1.4',
+          time: {
+            start: GSTC.api.date('2022-08-01').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-07').endOf('day').valueOf(),
+          },
+          style: { background: '#3498db' },
+        },
+        {
+          id: 't2',
+          label: '',
+          rowId: '1.2',
+          time: {
+            start: GSTC.api.date('2022-08-8').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-15').endOf('day').valueOf(),
+          },
+          style: { background: '#F1892D' },
+        },
+        {
+          id: 't1-2-1',
+          label: '',
+          rowId: '1.2.1',
+          time: {
+            start: GSTC.api.date('2022-08-08').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-15').endOf('day').valueOf(),
+          },
+          style: { background: '#3498db' },
+        },
+        {
+          id: 't1-2-2',
+          label: '',
+          rowId: '1.2.2',
+          time: {
+            start: GSTC.api.date('2022-08-08').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-15').endOf('day').valueOf(),
+          },
+          style: { background: '#3498db' },
+        },
+        {
+          id: 't3',
+          label: '',
+          rowId: '1.3.1',
+          time: {
+            start: GSTC.api.date('2022-08-1').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-08-15').endOf('day').valueOf(),
+          },
+          style: { background: '#F1892D' },
+        },
+      ];
+
+      const columnsFromDB = [
+        {
+          id: 'id',
+          label: 'ID',
+          data: ({ row }) => GSTC.api.sourceID(row.id), // show original id (not internal GSTCID)
+          sortable: ({ row }) => Number(GSTC.api.sourceID(row.id)), // sort by id converted to number
+          width: 80,
+          header: {
+            content: 'ID',
+          },
+        },
+        {
+          id: 'label',
+          data: 'label',
+          sortable: 'label',
+          expander: true,
+          isHTML: false,
+          width: 230,
+          header: {
+            content: 'Label',
+          },
+        },
+      ];
+      
+      const bookmarks = {
+        'bookmarks': {
+          time: GSTC.api.date(startTime).add(0, 'day').startOf('day').valueOf(),
+          color: '#3498DB',
+          label: 'bookmarks',
+        },
+        'bookmarks-2': {
+          time: GSTC.api.date(startTime).add(7, 'day').startOf('day').valueOf(),
+          color: '#3498DB',
+          label: 'bookmarks',
+        },
+      };
+
+      // Configuration object
+      const config = {
+        // for free key for your domain please visit https://gstc.neuronet.io/free-key
+        // if you need commercial license please visit https://gantt-schedule-timeline-calendar.neuronet.io/pricing
+
+          licenseKey:
+          '====BEGIN LICENSE KEY====\nWzVvPXMTi17W2tBoYgAjCRurYwmoilqPzew4PDApYkcrtu42uptbQiJmuZgy6iHyj9ZapfNupQZx0PO2tAMKmShNts7ZWT+N4N+lBkYCOsgc9nZG5ERYe25ixnNWzPnWA2YLj5GnZuKGJjK4EoRWsv3FJUoiBmUhKelLldb1dqCSiSjN4s5UwOtx55RLDEh0rj4GswVk4QaL74lmilmismeV+AxhQVdX8PVxz9bu0VW+wio/lo5QmfawWCeNLhuu0p0lys6pOvJhN/267+MsWhd3RYBvWIp6Mogug5P7nLQdeSdCgxVMVn1HOGZZ5ATTs9WDuWvvM1667MkEvtm2Ow==||U2FsdGVkX1+oPC1pq0yGIQoqTUJ8//k3BU81G6FLMlVijZH1e68HsOW0I2GI4aPzgeDcnoZvNO0MhGGTD+Nu8C1KviY3/a0MQhT+jGNofmA=\nUSUtJc13WJ1GjpEDFNHYeSsh1P7zRE5h+vdMN7KXcKDXAKi4gr3ebWUEHP3QjbcTeC3+mnn786sNVsERPLE67iqmgLdeXPjGIoScidvINw2x975diSP2r3kZkceqcfs48q3I6zXPaK1BJK/Yyin/7zboatOn+Abs+yAFZvDoLgga1nHRrtNgtaK+OXRJnCs519NsZuzqFSI2WuCYzaVkrO1hJqzgDsrxxue/NKmLtncLcWnFwNVZ2SDWdxgk4xGOi0GJmXUv3kn1fRau35FXF6zf0kPbilcWkGgweVpdDnBor1fjwvNLQDJpBT/Rav42SDKO7BRfWgjEKNY+lihQsA==\n====END LICENSE KEY====',
+          innerHeight: 1000,
+          plugins: [
+          // TimelinePointer.Plugin(), // timeline pointer must go first before selection, resizing and movement
+          // Selection.Plugin(),
+          // ItemResizing.Plugin(), // resizing must fo before movement
+          // ItemMovement.Plugin(),
+          TimeBookmarks.Plugin({
+            bookmarks,
+          }),
+          DependencyLines.Plugin({
+            onLine: [
+              (line) => {
+                line.type = GSTC.api.sourceID(line.fromItem.id) === '3' ? 'smooth' : 'square';
+                return line;
+              },
+            ],
+          }),
+        ],
+        list: {
+          columns: {
+            data: GSTC.api.fromArray(columnsFromDB),
+          },
+          rows: GSTC.api.fromArray(rowsFromDB),
+        },
+        chart: {
+          items: GSTC.api.fromArray(itemsFromDB),
+        },
+      };
+
+      // Generate GSTC state from configuration object
+      const state = GSTC.api.stateFromConfig(config);
+      globalThis.state = state;
+
+      // Mount the component
+      const app = GSTC({
+        element: document.getElementById('gstc'),
+        state,
+      });
+      
+      globalThis.gstc = app;
+    </script>
+  </body>
+</html>
