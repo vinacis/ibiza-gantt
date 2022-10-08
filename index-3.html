@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>GSTC simple example</title>
+    <link rel="stylesheet" href="./dist/style.css" />
+    <!-- replace this path  -->
+    <link rel="stylesheet" href="../reset.css" />
+  </head>
+  <body>
+    <div>
+      <left style="padding-left: 5px; color: red; font-size: 30px;">
+        
+      </left>
+      <right style="margin-left: 300px;color: red; font-size: 30px;">
+        Màn hình kéo thả tạo invoice
+      </right>
+    </div>
+    <div id="gstc" style="margin-top: 30px"></div>
+    <script src="./dist/plugins/time-bookmarks.umd.min.js"></script>
+    <script src="./dist/plugins/selection.umd.min.js"></script>
+    <script src="./dist/plugins/timeline-pointer.umd.min.js"></script>
+    <script src="./dist/plugins/dependency-lines.umd.min.js"></script>
+    <script src="./dist/plugins/item-movement.umd.min.js"></script>
+    <script src="./dist/plugins/item-resizing.umd.min.js"></script>
+    <script src="./dist/gstc.wasm.umd.min.js"></script>
+    <!-- replace this path  -->
+    <style>
+
+    </style>
+    <script>
+      
+      const startDate = GSTC.api.date('2022-10-01').startOf('month');
+      const endDate = startDate.clone().endOf('month');
+      const startTime = startDate.valueOf();
+
+      const rowsFromDB = [
+        {
+          id: '0',
+          label: 'Nguyễn Văn tèo',
+          expanded: true,
+          total: '18.000.000đ',
+        },
+        {
+          id: '1',
+          label: 'TrueCloud Server (Tp.HCM)',
+          parentId: '0',
+          expanded: true,
+          total: '12.000.000đ',
+        },
+        {
+          id: '1.1',
+          label: 'Chu kỳ 1',
+          parentId: '1',
+          expanded: true,
+          total: '5.000.000đ',
+        },
+        {
+          id: '1.2',
+          label: 'Chu kỳ 2',
+          parentId: '1',
+          expanded: true,
+          total: '5.000.000đ',
+        },
+        {
+          id: '1.3',
+          label: 'Chu kỳ 3',
+          parentId: '1',
+          expanded: true,
+          total: '5.000.000đ',
+        },
+        {
+          id: '1.4',
+          label: 'Chu kỳ hiện tại',
+          parentId: '1',
+          expanded: true,
+          total: '2.000.000đ',
+        },
+        {
+          id: '2',
+          label: 'VietNam CDN',
+          parentId: '0',
+          expanded: true,
+          total: '6.000.000đ',
+        },
+        {
+          id: '0.1',
+          label: 'Trần Đức Vỹ',
+          expanded: true,
+          total: '5.500.000đ',
+        },
+        {
+          id: '0.2',
+          label: 'Lê Thị Ngân',
+          expanded: true,
+          total: '100đ',
+        },
+      ];
+
+      const itemsFromDB = [
+      {
+          id: 't0',
+          label: 'Chọn thời gian xuất hóa đơn',
+          rowId: '0',
+          time: {
+            start: GSTC.api.date('2022-09-20').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-09-30').endOf('day').valueOf(),
+          },
+          style: { background: 'gray' },
+        },
+        {
+          id: 't1-1',
+          label: 'Đã thanh toán',
+          rowId: '1.1',
+          time: {
+            start: GSTC.api.date('2022-09-20').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-09-25').endOf('day').valueOf(),
+          },
+          style: { background: '#0EAC51' },
+        },
+        {
+          id: 't1-2',
+          label: 'Còn nợ',
+          rowId: '1.2',
+          time: {
+            start: GSTC.api.date('2022-09-25').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-09-26').endOf('day').valueOf(),
+          },
+          style: { background: '#E74C3C' },
+        },
+        {
+          id: 't1-3',
+          label: 'Còn nợ',
+          rowId: '1.3',
+          time: {
+            start: GSTC.api.date('2022-09-27').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-09-30').endOf('day').valueOf(),
+          },
+          style: { background: '#E74C3C' },
+        },
+        {
+          id: 't1-4',
+          label: '',
+          rowId: '1.4',
+          time: {
+            start: GSTC.api.date('2022-10-01').startOf('day').valueOf(),
+            end: GSTC.api.date('2022-10-08').endOf('day').valueOf(),
+          },
+          style: { background: '#0077c0' },
+        },
+      ];
+
+      const columnsFromDB = [
+        {
+          id: 'id',
+          label: 'ID',
+          data: ({ row }) => GSTC.api.sourceID(row.id), // show original id (not internal GSTCID)
+          sortable: ({ row }) => Number(GSTC.api.sourceID(row.id)), // sort by id converted to number
+          width: 50,
+          header: {
+            content: 'ID',
+          },
+        },
+        {
+          id: 'label',
+          data: 'label',
+          sortable: 'label',
+          expander: true,
+          isHTML: false,
+          width: 250,
+          header: {
+            content: 'Label',
+          },
+        },
+        {
+          id: 'total',
+          data: 'total',
+          width: 100,
+          header: {
+            content: 'Total',
+          },
+        },
+      ];
+      
+      const bookmarks = {
+        'bookmarks': {
+          time: GSTC.api.date(startTime).add(0, 'day').startOf('day').valueOf(),
+          color: '#3498DB',
+          label: 'bookmarks',
+        },
+        'bookmarks-2': {
+          time: GSTC.api.date(startTime).add(7, 'day').startOf('day').valueOf(),
+          color: '#3498DB',
+          label: 'bookmarks',
+        },
+      };
+
+      // Configuration object
+      const config = {
+        // for free key for your domain please visit https://gstc.neuronet.io/free-key
+        // if you need commercial license please visit https://gantt-schedule-timeline-calendar.neuronet.io/pricing
+
+          licenseKey:
+          '====BEGIN LICENSE KEY====\nWzVvPXMTi17W2tBoYgAjCRurYwmoilqPzew4PDApYkcrtu42uptbQiJmuZgy6iHyj9ZapfNupQZx0PO2tAMKmShNts7ZWT+N4N+lBkYCOsgc9nZG5ERYe25ixnNWzPnWA2YLj5GnZuKGJjK4EoRWsv3FJUoiBmUhKelLldb1dqCSiSjN4s5UwOtx55RLDEh0rj4GswVk4QaL74lmilmismeV+AxhQVdX8PVxz9bu0VW+wio/lo5QmfawWCeNLhuu0p0lys6pOvJhN/267+MsWhd3RYBvWIp6Mogug5P7nLQdeSdCgxVMVn1HOGZZ5ATTs9WDuWvvM1667MkEvtm2Ow==||U2FsdGVkX1+oPC1pq0yGIQoqTUJ8//k3BU81G6FLMlVijZH1e68HsOW0I2GI4aPzgeDcnoZvNO0MhGGTD+Nu8C1KviY3/a0MQhT+jGNofmA=\nUSUtJc13WJ1GjpEDFNHYeSsh1P7zRE5h+vdMN7KXcKDXAKi4gr3ebWUEHP3QjbcTeC3+mnn786sNVsERPLE67iqmgLdeXPjGIoScidvINw2x975diSP2r3kZkceqcfs48q3I6zXPaK1BJK/Yyin/7zboatOn+Abs+yAFZvDoLgga1nHRrtNgtaK+OXRJnCs519NsZuzqFSI2WuCYzaVkrO1hJqzgDsrxxue/NKmLtncLcWnFwNVZ2SDWdxgk4xGOi0GJmXUv3kn1fRau35FXF6zf0kPbilcWkGgweVpdDnBor1fjwvNLQDJpBT/Rav42SDKO7BRfWgjEKNY+lihQsA==\n====END LICENSE KEY====',
+          innerHeight: 400,
+          plugins: [
+          TimelinePointer.Plugin(), // timeline pointer must go first before selection, resizing and movement
+          Selection.Plugin(),
+          ItemResizing.Plugin(), // resizing must fo before movement
+          ItemMovement.Plugin(),
+          TimeBookmarks.Plugin({
+            bookmarks,
+          }),
+          DependencyLines.Plugin({
+            onLine: [
+              (line) => {
+                line.type = GSTC.api.sourceID(line.fromItem.id) === '3' ? 'smooth' : 'square';
+                return line;
+              },
+            ],
+          }),
+        ],
+        list: {
+          columns: {
+            data: GSTC.api.fromArray(columnsFromDB),
+          },
+          rows: GSTC.api.fromArray(rowsFromDB),
+        },
+        chart: {
+          items: GSTC.api.fromArray(itemsFromDB),
+        },
+      };
+
+      // Generate GSTC state from configuration object
+      const state = GSTC.api.stateFromConfig(config);
+      globalThis.state = state;
+
+      // Mount the component
+      const app = GSTC({
+        element: document.getElementById('gstc'),
+        state,
+      });
+      
+      globalThis.gstc = app;
+    </script>
+  </body>
+</html>
